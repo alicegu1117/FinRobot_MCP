@@ -2,7 +2,9 @@ import os
 from textwrap import dedent
 from typing import Annotated, List
 from datetime import timedelta, datetime
-from ..data_source import YFinanceUtils, SECUtils, FMPUtils
+from data_source.yfinance_utils import YFinanceUtils
+from data_source.sec_utils import SECUtils
+from data_source.fmp_utils import FMPUtils
 
 
 def combine_prompt(instruction, resource, table_str=None):
