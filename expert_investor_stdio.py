@@ -1,6 +1,6 @@
 """
-Expert Investor MCP Server using FastMCP
-This shows how the expert investor would look with FastMCP and its limitations
+Expert Investor MCP Server using FastMCP with stdio transport
+This version uses stdio transport to avoid HTTP compatibility issues
 """
 from typing import Annotated
 import os
@@ -40,7 +40,7 @@ server = FastMCP(
     ),
 )
 
-
+# Copy all the tools from the original expert_investor.py
 @server.tool()
 def get_sec_report_tool(
         ticker_symbol: Annotated[str, "ticker symbol"],
@@ -53,6 +53,51 @@ def get_sec_report_tool(
     from data_source.fmp_utils import FMPUtils
     return FMPUtils.get_sec_report(ticker_symbol, fyear)
 
+# @server.tool()
+# def build_annual_report_tool(
+#     ticker_symbol: Annotated[str, "ticker symbol"],
+#     save_path: Annotated[str, "path to save the annual report pdf"],
+#     operating_results_path: Annotated[
+#         str,
+#         "path to the company's income summarization from its financial report",
+#     ],
+#     market_position_path: Annotated[
+#         str,
+#         "path to the company's current situation and end market (geography), major customers (blue chip or not), market share from its financial report, avoid similar sentences also generated in the business overview section, classify it into either of the two",
+#     ],
+#     business_overview_path: Annotated[
+#         str,
+#         "path to the company's description and business highlights from its financial report",
+#     ],
+#     risk_assessment_path: Annotated[
+#         str,
+#         "path to the company's risk assessment from its financial report",
+#     ],
+#     competitors_analysis_path: Annotated[
+#         str,
+#         "path to the company's competitors analysis from its financial report and competitors' financial report",
+#     ],
+#     share_performance_image_path: Annotated[
+#         str, "path to the share performance image"
+#     ],
+#     pe_eps_performance_image_path: Annotated[
+#         str, "path to the PE and EPS performance image"
+#     ],
+#     filing_date: Annotated[str, "filing date of the analyzed financial report"],
+# ) -> str:
+#     from functional.reportlab import ReportLabUtils
+#     return ReportLabUtils.build_annual_report(
+#         ticker_symbol,
+#         save_path,
+#         operating_results=get_file_resource(operating_results_path),
+#         market_position=get_file_resource(market_position_path),
+#         business_overview=get_file_resource(business_overview_path),
+#         risk_assessment=get_file_resource(risk_assessment_path),
+#         competitors_analysis=get_file_resource(competitors_analysis_path),
+#         share_performance_image_path=share_performance_image_path,
+#         pe_eps_performance_image_path=pe_eps_performance_image_path,
+#         filing_date=filing_date
+#     )
 @server.tool()
 def build_annual_report_tool(
     ticker_symbol: Annotated[str, "ticker symbol"],
@@ -100,6 +145,15 @@ def build_annual_report_tool(
     )
 
 @server.tool()
+def analyze_company_description_tool(
+    ticker_symbol: Annotated[str, "ticker symbol"],
+    fyear: Annotated[str, "fiscal year of the 10-K report"],
+    save_path: Annotated[str, "txt file path, to which the returned instruction & resources are written."]
+) -> str:
+    """Analyze company description with 10-K report data"""
+    return ReportAnalysisUtils.analyze_company_description(ticker_symbol, fyear, save_path)
+
+@server.tool()
 def analyze_income_stmt_tool(
     ticker_symbol: Annotated[str, "ticker symbol"],
     fyear: Annotated[str, "fiscal year of the 10-K report"],
@@ -108,6 +162,16 @@ def analyze_income_stmt_tool(
     """Analyze income statement with 10-K report data"""
     return ReportAnalysisUtils.analyze_income_stmt(ticker_symbol, fyear, save_path)
 
+@server.tool()
+def income_summarization_tool(
+    ticker_symbol: Annotated[str, "ticker symbol"],
+    fyear: Annotated[str, "fiscal year of the 10-K report"],
+    income_stmt_analysis: Annotated[str, "in-depth income statement analysis"],
+    segment_analysis: Annotated[str, "in-depth segment analysis"],
+    save_path: Annotated[str, "txt file path, to which the returned instruction & resources are written."]
+) -> str:
+    """Summarize income statement and segment analysis"""
+    return ReportAnalysisUtils.income_summarization(ticker_symbol, fyear, income_stmt_analysis, segment_analysis, save_path)
 
 @server.tool()
 def analyze_balance_sheet_tool(
@@ -118,7 +182,6 @@ def analyze_balance_sheet_tool(
     """Analyze balance sheet with 10-K report data"""
     return ReportAnalysisUtils.analyze_balance_sheet(ticker_symbol, fyear, save_path)
 
-
 @server.tool()
 def analyze_cash_flow_tool(
     ticker_symbol: Annotated[str, "ticker symbol"],
@@ -127,7 +190,6 @@ def analyze_cash_flow_tool(
 ) -> str:
     """Analyze cash flow statement with 10-K report data"""
     return ReportAnalysisUtils.analyze_cash_flow(ticker_symbol, fyear, save_path)
-
 
 @server.tool()
 def analyze_segment_stmt_tool(
@@ -139,6 +201,15 @@ def analyze_segment_stmt_tool(
     return ReportAnalysisUtils.analyze_segment_stmt(ticker_symbol, fyear, save_path)
 
 @server.tool()
+def analyze_business_highlights_tool(
+    ticker_symbol: Annotated[str, "ticker symbol"],
+    fyear: Annotated[str, "fiscal year of the 10-K report"],
+    save_path: Annotated[str, "txt file path, to which the returned instruction & resources are written."]
+) -> str:
+    """Analyze business highlights with 10-K report data"""
+    return ReportAnalysisUtils.analyze_business_highlights(ticker_symbol, fyear, save_path)
+
+@server.tool()
 def get_risk_assessment_tool(
     ticker_symbol: Annotated[str, "ticker symbol"],
     fyear: Annotated[str, "fiscal year of the 10-K report"],
@@ -146,7 +217,6 @@ def get_risk_assessment_tool(
 ) -> str:
     """Get risk assessment from 10-K report"""
     return ReportAnalysisUtils.get_risk_assessment(ticker_symbol, fyear, save_path)
-
 
 @server.tool()
 def get_share_performance_tool(
@@ -157,7 +227,6 @@ def get_share_performance_tool(
     """Plot the stock performance of a company compared to the S&P 500 over the past year."""
     return ReportChartUtils.get_share_performance(ticker_symbol, filing_date, save_path)
 
-
 @server.tool()
 def get_pe_eps_performance_tool(
     ticker_symbol: Annotated[str, "Ticker symbol of the stock (e.g., 'AAPL' for Apple)"],
@@ -167,7 +236,6 @@ def get_pe_eps_performance_tool(
 ) -> str:
     """Plot the PE ratio and EPS performance of a company over the past n years."""
     return ReportChartUtils.get_pe_eps_performance(ticker_symbol, filing_date, years, save_path)
-
 
 @server.tool()
 def plot_stock_price_chart_tool(
@@ -186,15 +254,40 @@ def plot_stock_price_chart_tool(
         ticker_symbol, start_date, end_date, save_path, verbose, type, style, mav, show_nontrading
     )
 
-
 @server.tool()
 def check_text_length_tool(
-    text: Annotated[str, "text to check the length"],
+    text_file_path: Annotated[str, "path to the text file to check the length"],
 ) -> str:
     """Check the length of the text"""
     from functional import TextUtils
-    return TextUtils.check_text_length(text)
+    return TextUtils.check_text_length(get_file_resource(text_file_path))
 
+@server.resource("report://files")
+def get_available_files() -> str:
+    """Get a list of available files"""
+    files = []
+    report_path = os.path.join(os.getcwd(), "report")
+    for file in os.listdir(report_path):
+        file_path = os.path.join(report_path, file)
+        if os.path.isfile(file_path):
+            if os.path.exists(file_path):
+                files.append(file)
+    return files
+
+@server.resource("report://{file}")
+def get_file_resource(file: Annotated[str, "filename of the file to get"]) -> str:
+    """Get a file resource"""
+    file_name = file.lower()
+    file_path = os.path.join(os.getcwd(), "report", file_name)
+
+    if not os.path.exists(file_path):
+        return f"File {file} not found"
+    
+    try:
+        with open(file_path, "r") as file:
+            return file.read()
+    except Exception as e:
+        return f"Error reading file {file}: {e}"
 
 @server.prompt()
 def generate_expert_investor_prompt(
@@ -220,18 +313,20 @@ def generate_expert_investor_prompt(
            - Use only data from the financial metrics table.
            - Do not repeat or reuse similar sentences from other sections; delete any such sentences.
            - Classify each statement into the appropriate section.
-           - The final sentence must discuss how {company}’s performance over these years and across these metrics might justify or contradict its current market valuation (as reflected in the EV/EBITDA ratio).
+           - The final sentence must discuss how {company}'s performance over these years and across these metrics might justify or contradict its current market valuation (as reflected in the EV/EBITDA ratio).
         6. **Paragraph length requirements:**
            - Each paragraph on the first page (business overview, market position, and operating results) should be between 150 and 160 words.
            - Each paragraph on the second page (risk assessment and competitors analysis) should be between 500 and 600 words.
+           - Before passing the file path to the tool that builds the annual report, you should check the text length of the file content and if it exceeds the maximum length, you should summarize the file content, save the summary to a new file, and pass the new file path to the tool.
            - Do not generate the PDF until all these requirements are explicitly fulfilled.
+        7. **Prompt length requirements:**
+           - Clear the past chat history in the prompt when you finish the annual report for one ticker symbol and start a new one.
         """
     )
-
 
 if __name__ == "__main__":
     from utils import register_keys_from_json
     register_keys_from_json("./config_api_keys")
 
-    # Run the server
-    server.run(transport="streamable-http") 
+    # Run the server with stdio transport
+    server.run(transport="stdio") 

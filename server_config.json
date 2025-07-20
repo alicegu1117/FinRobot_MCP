@@ -1,0 +1,8 @@
+{
+    "mcpServers": {
+        "expert-investor": {
+            "command": "uv",
+            "args": ["run", "expert_investor_stdio.py"]
+        }
+    }
+}

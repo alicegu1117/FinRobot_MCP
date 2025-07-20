@@ -167,6 +167,7 @@ class FMPUtils:
         for year_offset in range(years):
             # Construct URL for income statement and ratios for each year
             income_statement_url = f"{base_url}/income-statement/{ticker_symbol}?limit={years}&apikey={fmp_api_key}"
+            print(f"income_statement_url: {income_statement_url}")
             ratios_url = (
                 f"{base_url}/ratios/{ticker_symbol}?limit={years}&apikey={fmp_api_key}"
             )
