@@ -53,51 +53,6 @@ def get_sec_report_tool(
     from data_source.fmp_utils import FMPUtils
     return FMPUtils.get_sec_report(ticker_symbol, fyear)
 
-# @server.tool()
-# def build_annual_report_tool(
-#     ticker_symbol: Annotated[str, "ticker symbol"],
-#     save_path: Annotated[str, "path to save the annual report pdf"],
-#     operating_results_path: Annotated[
-#         str,
-#         "path to the company's income summarization from its financial report",
-#     ],
-#     market_position_path: Annotated[
-#         str,
-#         "path to the company's current situation and end market (geography), major customers (blue chip or not), market share from its financial report, avoid similar sentences also generated in the business overview section, classify it into either of the two",
-#     ],
-#     business_overview_path: Annotated[
-#         str,
-#         "path to the company's description and business highlights from its financial report",
-#     ],
-#     risk_assessment_path: Annotated[
-#         str,
-#         "path to the company's risk assessment from its financial report",
-#     ],
-#     competitors_analysis_path: Annotated[
-#         str,
-#         "path to the company's competitors analysis from its financial report and competitors' financial report",
-#     ],
-#     share_performance_image_path: Annotated[
-#         str, "path to the share performance image"
-#     ],
-#     pe_eps_performance_image_path: Annotated[
-#         str, "path to the PE and EPS performance image"
-#     ],
-#     filing_date: Annotated[str, "filing date of the analyzed financial report"],
-# ) -> str:
-#     from functional.reportlab import ReportLabUtils
-#     return ReportLabUtils.build_annual_report(
-#         ticker_symbol,
-#         save_path,
-#         operating_results=get_file_resource(operating_results_path),
-#         market_position=get_file_resource(market_position_path),
-#         business_overview=get_file_resource(business_overview_path),
-#         risk_assessment=get_file_resource(risk_assessment_path),
-#         competitors_analysis=get_file_resource(competitors_analysis_path),
-#         share_performance_image_path=share_performance_image_path,
-#         pe_eps_performance_image_path=pe_eps_performance_image_path,
-#         filing_date=filing_date
-#     )
 @server.tool()
 def build_annual_report_tool(
     ticker_symbol: Annotated[str, "ticker symbol"],

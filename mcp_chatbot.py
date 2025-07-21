@@ -12,6 +12,7 @@ from mcp.client.stdio import stdio_client
 from mcp.client.streamable_http import streamablehttp_client
 
 import nest_asyncio
+import os
 
 # Suppress the async generator warning
 warnings.filterwarnings("ignore", message=".*async generator ignored GeneratorExit.*")
@@ -95,6 +96,9 @@ class MCP_ChatBot:
                 for resource in resources_response.resources:
                     resource_uri = str(resource.uri)
                     self.sessions[resource_uri] = session
+            # Dynamically add all files under report folder as resources
+            for file in os.listdir("report"):
+                self.sessions[f"report://{file}"] = session
         
         except Exception as e:
             print(f"Warning: Error setting up session {server_name}: {e}")
@@ -188,13 +192,6 @@ class MCP_ChatBot:
     async def get_resource(self, resource_uri):
         session = self.sessions.get(resource_uri)
         
-        # Fallback for papers URIs - try any papers resource session
-        if not session and resource_uri.startswith("report://"):
-            for uri, sess in self.sessions.items():
-                if uri.startswith("report://"):
-                    session = sess
-                    break
-            
         if not session:
             print(f"Resource '{resource_uri}' not found.")
             return
