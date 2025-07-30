@@ -13,6 +13,7 @@ from mcp.client.streamable_http import streamablehttp_client
 
 import nest_asyncio
 import os
+import sys
 
 # Suppress the async generator warning
 warnings.filterwarnings("ignore", message=".*async generator ignored GeneratorExit.*")
@@ -58,10 +59,19 @@ class MCP_ChatBot:
         print(f"Connecting to HTTP server {server_name}")
         session = None
         try:
-            async with streamablehttp_client(server_config["url"]) as (read, write, get_session_id_callback):
-                session = ClientSession(read, write)
-                await session.initialize()
-                await self._setup_session(session, server_name)
+            print(f"[DEBUG] Attempting to connect to HTTP server at {server_config['url']}", file=sys.stderr)
+            read, write, get_session_id_callback = await self.exit_stack.enter_async_context(
+                streamablehttp_client(server_config["url"])
+            )
+            print(f"[DEBUG] HTTP connection established to {server_config['url']}", file=sys.stderr)
+            session = await self.exit_stack.enter_async_context(
+                ClientSession(read, write)
+            )
+            print(f"[DEBUG] ClientSession created for HTTP server {server_name}", file=sys.stderr)
+            await session.initialize()
+            print(f"[DEBUG] Session initialized for HTTP server {server_name}", file=sys.stderr)
+            await self._setup_session(session, server_name)
+            print(f"[DEBUG] Session setup complete for HTTP server {server_name}", file=sys.stderr)
 
         except Exception as e:
             print(f"Error connecting to HTTP server {server_name}: {e}")
@@ -128,7 +138,7 @@ class MCP_ChatBot:
         # print(f"Token count: {prev_token_count}")
         
         while True:
-            print(f"Processing query with {len(messages)} messages...")
+            print(f"Processing query with messages: {messages}")
             try:
                 response = self.anthropic.messages.create(
                     max_tokens = 4096,  # Increased token limit

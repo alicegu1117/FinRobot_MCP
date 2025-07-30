@@ -20,6 +20,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_LEFT
 
 from data_source.fmp_utils import FMPUtils
+from data_source.yfinance_utils import YFinanceUtils
 from functional.analyzer import ReportAnalysisUtils
 from typing import Annotated
 
