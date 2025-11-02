@@ -284,4 +284,4 @@ if __name__ == "__main__":
     register_keys_from_json("./config_api_keys")
 
     # Run the server with stdio transport
-    server.run(transport="stdio") 
+    server.run(transport="stdio") # add a newline

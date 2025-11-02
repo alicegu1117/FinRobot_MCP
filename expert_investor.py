@@ -291,4 +291,4 @@ if __name__ == "__main__":
     register_keys_from_json("./config_api_keys")
 
     # Run the server
-    server.run(transport="streamable-http") 
+    server.run(transport="streamable-http") # add a newline

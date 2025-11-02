@@ -82,3 +82,4 @@ def get_next_weekday(date):
 #         trigger=ConversableAgent
 #         )
 #     return manager
+# add a newline
