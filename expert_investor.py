@@ -265,7 +265,7 @@ def generate_expert_investor_prompt(
 
         Please follow these instructions carefully:
 
-        1. **Explain your working plan** before you begin any analysis.
+        1. **Explain your working plan** before you begin any analysis and add a newline after the plan.
         2. **Use tools one by one** for clarity, especially when requesting instructions or data.
         3. **Perform all file operations** within the directory "{work_dir}".
         4. **Display any generated image** in the chat as soon as it is created.
